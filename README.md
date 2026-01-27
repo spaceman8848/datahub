@@ -16,7 +16,7 @@ DataHub 是一个基于 Streamlit 的数据处理工具集，提供多种 CSV、
 - 支持自定义分隔符
 - 处理带或不带表头的文件
 - 批量转换多个 TXT 文件
-![TXT转CSV转换](https://github.com/spaceman8848/dataHub/imgs/002.jpg)
+![TXT转CSV转换](https://github.com/spaceman8848/datahub/blob/master/imgs/002.jpg)
 
 ### 🔗 CSV文件合并 (003_Merge_2CSVs.py)
 - 支持 SQL 风格的 JOIN 操作
@@ -24,7 +24,7 @@ DataHub 是一个基于 Streamlit 的数据处理工具集，提供多种 CSV、
 - 支持左右表不同的键列
 - 可视化 JOIN 操作示意图
 - 支持左侧一个文件与右侧多个文件合并
-![CSV文件合并](https://github.com/spaceman8848/dataHub/imgs/003.jpg)
+![CSV文件合并](https://github.com/spaceman8848/datahub/blob/master/imgs/003.jpg)
 
 ### 🧹 CSV数据清洗 (004_CSV_Data_Cleaning.py)
 - 灵活的数据跳过选项（支持跳过指定行数，区分是否包含列名）
@@ -32,7 +32,7 @@ DataHub 是一个基于 Streamlit 的数据处理工具集，提供多种 CSV、
 - 支持多个筛选条件之间的逻辑关系（AND/OR）
 - 数据类型调整（跳过行、取前N行）
 - 批量处理和下载清洗后的文件
-![CSV数据清洗](https://github.com/spaceman8848/dataHub/imgs/004.jpg)
+![CSV数据清洗](https://github.com/spaceman8848/datahub/blob/master/imgs/004.jpg)
 
 ### 🔄 多Excel文件合并 (005_Combine_multiExcels.py)
 - 支持同时上传多个 Excel 文件
