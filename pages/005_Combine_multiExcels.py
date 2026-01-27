@@ -1,24 +1,27 @@
+
 import streamlit as st
 import pandas as pd
 import io
 from datetime import datetime
 
-# /d:/Yuxi/dataHub/pages/001_Combine_multiCSVs.py
+# /d:/Yuxi/dataHub/pages/005_Combine_multiExcels.py
 
-st.set_page_config(page_title="合并多个CSV", layout="wide")
-st.title("合并多个 CSV 文件到一个 CSV")
+st.set_page_config(page_title="合并多个Excel", layout="wide")
+st.title("合并多个 Excel 文件到一个 Excel")
 
 st.sidebar.header("设置")
-sep = st.sidebar.selectbox("分隔符", [",", "\t", ";", "|"], index=0, help="选择 CSV 的分隔符")
-encoding = st.sidebar.text_input("文件编码", "utf-8", help="例如 utf-8 或 gbk")
-header_option = st.sidebar.selectbox("包含表头(header)", ["有表头 (第一行为列名)", "无表头"], index=0)
+sheet_name_option = st.sidebar.selectbox(
+    "选择工作表",
+    ["第一个工作表", "所有工作表"],
+    help="选择读取每个Excel文件的工作表方式"
+)
 ignore_index = st.sidebar.checkbox("重建索引 (ignore_index=True)", value=True)
 drop_duplicates = st.sidebar.checkbox("去重 (基于全部列)", value=False)
 join_mode = st.sidebar.selectbox("合并方向", ["按行合并 (concat rows)", "按列合并 (concat columns)"], index=0)
 how_outer = st.sidebar.selectbox("行合并时列对齐方式", ["outer", "inner"], index=0)  # only for rows
 
-st.markdown("拖拽或选择多个 CSV 文件上传（支持不同文件名）:")
-uploaded_files = st.file_uploader("选择 CSV 文件", type=["csv"], accept_multiple_files=True)
+st.markdown("拖拽或选择多个 Excel 文件上传（支持不同文件名）:")
+uploaded_files = st.file_uploader("选择 Excel 文件", type=["xlsx", "xls"], accept_multiple_files=True)
 
 if uploaded_files:
     dfs = []
@@ -27,12 +30,26 @@ if uploaded_files:
         try:
             # reset file pointer if needed
             f.seek(0)
-            if header_option.startswith("有"):
-                df = pd.read_csv(f, sep=sep, encoding=encoding)
+            filename = getattr(f, "name", "uploaded")
+
+            if sheet_name_option == "第一个工作表":
+                df = pd.read_excel(f, engine='openpyxl')
+                # 获取第一个工作表名称
+                excel_file = pd.ExcelFile(f, engine='openpyxl')
+                sheet_name = excel_file.sheet_names[0]
+                # 格式化为"文件名_sheet名"
+                df["_source_filename"] = f"{filename}_{sheet_name}"
             else:
-                df = pd.read_csv(f, sep=sep, encoding=encoding, header=None)
-            # add source filename column for traceability
-            df["_source_filename"] = getattr(f, "name", "uploaded")
+                # 读取所有工作表并合并
+                excel_file = pd.ExcelFile(f, engine='openpyxl')
+                sheets_dfs = []
+                for sheet in excel_file.sheet_names:
+                    sheet_df = pd.read_excel(excel_file, sheet_name=sheet, engine='openpyxl')
+                    # 格式化为"文件名_sheet名"
+                    sheet_df["_source_filename"] = f"{filename}_{sheet}"
+                    sheets_dfs.append(sheet_df)
+                df = pd.concat(sheets_dfs, ignore_index=True)
+
             dfs.append(df)
         except Exception as e:
             errors.append(f"{getattr(f, 'name', 'file')}: {e}")
@@ -64,13 +81,16 @@ if uploaded_files:
 
                 # 准备下载
                 buf = io.BytesIO()
-                csv_bytes = combined.to_csv(index=False, encoding="utf-8-sig").encode("utf-8-sig")
-                buf.write(csv_bytes)
+                with pd.ExcelWriter(buf, engine='openpyxl') as writer:
+                    combined.to_excel(writer, index=False)
                 buf.seek(0)
                 now = datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename = f"combined_{now}.csv"
-                st.download_button("下载合并后的 CSV", data=buf, file_name=filename, mime="text/csv")
+                filename = f"combined_{now}.xlsx"
+                st.download_button(
+                    "下载合并后的 Excel",
+                    data=buf,
+                    file_name=filename,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
             except Exception as e:
                 st.error(f"合并失败: {e}")
-else:
-    st.info("请在上方上传至少一个 CSV 文件以开始合并。")
