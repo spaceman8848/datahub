@@ -9,7 +9,7 @@ DataHub 是一个基于 Streamlit 的数据处理工具集，提供多种 CSV、
 - 自动检测和处理不同编码格式
 - 可选择合并方式：纵向合并（追加行）或横向合并（追加列）
 - 支持批量下载合并后的文件
-![多CSV文件合并]((https://github.com/spaceman8848/datahub/blob/master/imgs/001.jpg))
+![多CSV文件合并](https://github.com/spaceman8848/datahub/blob/master/imgs/001.jpg)
 
 ### 📝 TXT转CSV转换 (002_Convert_txt_to_csv.py)
 - 自动检测文本文件分隔符（逗号、制表符、分号等）
