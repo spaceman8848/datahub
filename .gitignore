@@ -118,9 +118,3 @@ Thumbs.db
 
 # Streamlit
 .streamlit/
-
-# DataHub specific
-demoData/*.csv
-demoData/*.txt
-imgs/*.png
-static/*.png
